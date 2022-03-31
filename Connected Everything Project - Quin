@@ -1,0 +1,89 @@
+# import pygame module in this program
+import pygame
+import time
+from requests import get
+import json
+#add your api key into this URL
+url = "http://api.bart.gov/api/etd.aspx?cmd=etd&orig=BALB&dir=n&key=QEPV-5UEU-862T-DWEI&json=y"
+ 
+# activate the pygame library
+# initiate pygame and give permission
+# to use pygame's functionality.
+pygame.init()
+ 
+# define the RGB value for white,
+#  green, blue colour .
+white = (255, 255, 255)
+green = (0, 255, 0)
+blue = (0, 0, 128)
+black = (0, 0, 0)
+red = (252, 3, 3)
+yellow = (252, 252, 3)
+DeepPink = (255, 20, 147)
+Crimson = (220, 20, 60)
+DarkOrange = (255, 140, 0)
+Gold = (255, 215, 0)
+Sienna = (160, 82, 45)
+Indigo = (75, 0, 130)
+Magenta = (255, 0, 255)
+Teal = (0, 128, 128)
+Aquamarine = (127, 255, 212)
+MistyRose = (255, 228, 225)
+Navy = (0, 0, 128)
+
+ 
+# assigning values to X and Y variable
+X = 1280
+Y = 900
+ 
+# create the display surface object
+# of specific dimension..e(X, Y).
+display_surface = pygame.display.set_mode((X, Y))
+#display_surface = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+ 
+# set the pygame window name
+pygame.display.set_caption('Show Text')
+ 
+# create a font object.
+# 1st parameter is the font file
+# which is present in pygame.
+# 2nd parameter is size of the font
+font = pygame.font.SysFont("lucidsans", 120)
+
+ 
+# infinite loop
+while True:
+    bart = get(url).json()
+    station=bart['root']['station'][0]['name']
+    print(bart['root']['station'][0]['name'],"station")
+    incoming=(bart['root']['station'][0]['etd'][0]['estimate'][0]['minutes'])
+    print("Next Train", bart['root']['station'][0]['etd'][0]['estimate'][0]['minutes'])
+    going=(bart['root']['station'][0]['etd'][0]['estimate'][0]['direction'],bart['root']['station'][0]['etd'][0]['destination'])
+    print("headed", bart['root']['station'][0]['etd'][0]['estimate'][0]['direction'],"to",bart['root']['station'][0]['etd'][0]['destination'])
+    # completely fill the surface object
+    # with white color
+    display_surface.fill(black)
+    text = font.render(str(station)+" station", True, black, Aquamarine)
+    textRect = text.get_rect()
+    textRect.center = (X // 2, Y // 2.65)
+    
+    display_surface.fill(black)
+    text2 = font.render(str(incoming)+" minutes", True, black, DeepPink)
+    textRect2 = text2.get_rect()
+    textRect2.center = (X // 2, Y // 2)
+    
+    display_surface.fill(black)
+    leaving="Headed "+ bart['root']['station'][0]['etd'][0]['estimate'][0]['direction']+" to " +bart['root']['station'][0]['etd'][0]['destination']
+    text3 = font.render (str(leaving), True, black, Crimson)
+    textRect3 = text3.get_rect()
+    textRect3.center = (X // 2, Y // 1.65)
+    
+    # copying the text surface object
+    # to the display surface object
+    # at the center coordinate.
+    display_surface.blit(text, textRect)
+    display_surface.blit(text2, textRect2)
+    display_surface.blit(text3, textRect3)
+    # Draws the surface object to the screen.
+    pygame.display.update()
+    time.sleep(10) #get new data every 20 seconds
